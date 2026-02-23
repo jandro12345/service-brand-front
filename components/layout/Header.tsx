@@ -1,10 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useStore } from '@/stores/store';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/auth';
 
 export default function Header() {
-  const { isDarkMode, toggleDarkMode } = useStore();
+  const router = useRouter();
+  const { logout, user } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <header className="bg-blue-600 text-white shadow">
@@ -13,11 +20,26 @@ export default function Header() {
           🎨 Brand AI
         </Link>
 
-        <button
-          onClick={toggleDarkMode}
-          className="p-2 rounded-lg bg-blue-700 hover:bg-blue-800 transition"
-        >
-        </button>
+        <div className="flex items-center gap-4">
+
+          {/* Usuario */}
+          {user && (
+            <span className="text-sm">
+              {user.email}
+            </span>
+          )}
+
+          {/* Logout */}
+          {user && (
+            <button
+              onClick={handleLogout}
+              className="px-3 py-2 bg-red-600 rounded hover:bg-red-700 transition"
+            >
+              Logout
+            </button>
+          )}
+
+        </div>
       </div>
     </header>
   );
