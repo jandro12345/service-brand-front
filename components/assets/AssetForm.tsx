@@ -12,7 +12,7 @@ import Textarea from '@/components/ui/Textarea';
 const assetSchema = z.object({
   brand_id: z.string().min(1, 'Selecciona una marca'),
   asset_type: z.string().min(1, 'Selecciona un tipo de asset'),
-  instructions: z.string().optional(),
+  instructions: z.string().min(0),
 });
 
 type AssetFormData = z.infer<typeof assetSchema>;
@@ -22,15 +22,26 @@ const ASSET_TYPES = ['Descripciones de producto', 'Guiones de video', 'Prompts d
 export default function AssetForm() {
   const { data: brandsData } = useBrands();
   const { mutate, isPending, data } = useCreateAsset();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<AssetFormData>({
     resolver: zodResolver(assetSchema),
+    defaultValues: {
+      brand_id: '',
+      asset_type: '',
+      instructions: '',
+    },
   });
 
-  const onSubmit = (data: AssetFormData) => mutate(data);
+  const onSubmit = (data: AssetFormData) =>
+  mutate({
+    brand_id: data.brand_id,
+    asset_type: data.asset_type,
+    instructions: data.instructions,
+  });
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
